@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Painel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#0f172a;color:white;}
+.topbar{background:#020617;padding:12px 25px;display:flex;justify-content:space-between;align-items:center;}
+.user-area{display:flex;align-items:center;gap:10px;}
+.user-area img{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#333;}
+.container{display:flex;height:calc(100vh - 60px);}
+.sidebar{width:230px;background:#020617;padding:20px;}
+.sidebar button{width:100%;margin-bottom:10px;background:#1e293b;color:white;border:none;padding:12px;border-radius:6px;}
+.content{flex:1;padding:30px;overflow:auto;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;}
+.card{background:#1e293b;padding:20px;border-radius:10px;}
+table{width:100%;border-collapse:collapse;margin-top:15px;background:#1e293b;}
+th,td{padding:12px;border-bottom:1px solid #334155;}
+th{background:#020617;}
+.fotoTabela{width:40px;height:40px;border-radius:50%;object-fit:cover;}
+.excluir{background:#dc2626;color:white;border:none;padding:6px 10px;border-radius:6px;}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+<h2>Painel</h2>
+<div class="user-area">
+<img id="fotoUser">
+<span id="nomeUser"></span>
+<button onclick="sair()">Sair</button>
+</div>
+</div>
+
+<div class="container">
+<div class="sidebar" id="menu"></div>
+<div class="content" id="content"></div>
+</div>
+
+<script>
+let usuarioAtual;
+
+function carregarUsuario(){
+usuarioAtual=JSON.parse(localStorage.getItem("usuarioLogado"));
+if(!usuarioAtual){location="login.html";return;}
+
+nomeUser.innerText=usuarioAtual.usuario+
+(usuarioAtual.nivel==="admin"?" (Admin)":"");
+fotoUser.src=usuarioAtual.foto||"";
+
+let menu=`<button onclick="dashboard()">Dashboard</button>`;
+if(usuarioAtual.nivel==="admin"){
+menu+=`<button onclick="listarUsuarios()">Usuários</button>`;
+}
+document.getElementById("menu").innerHTML=menu;
+}
+
+function sair(){
+localStorage.removeItem("usuarioLogado");
+location="login.html";
+}
+
+function dashboard(){
+content.innerHTML=`
+<h2>Bem-vindo</h2>
+<div class="cards">
+<div class="card">Sistema ativo</div>
+<div class="card">Usuário: ${usuarioAtual.usuario}</div>
+<div class="card">Nível: ${usuarioAtual.nivel}</div>
+</div>`;
+}
+
+function listarUsuarios(){
+let usuarios=JSON.parse(localStorage.getItem("usuarios"))||[];
+
+let html=`<h2>Usuários</h2>
+<table>
+<tr><th>Foto</th><th>Usuário</th><th>Nível</th><th>Ação</th></tr>`;
+
+usuarios.forEach((u,i)=>{
+html+=`
+<tr>
+<td><img src="${u.foto||''}" class="fotoTabela"></td>
+<td>${u.usuario}</td>
+<td>${u.nivel}</td>
+<td>
+${u.nivel==="admin"
+? "Protegido"
+: `<button class="excluir" onclick="excluirUsuario(${i})">Excluir</button>`}
+</td>
+</tr>`;
+});
+
+html+="</table>";
+content.innerHTML=html;
+}
+
+function excluirUsuario(i){
+let usuarios=JSON.parse(localStorage.getItem("usuarios"));
+usuarios.splice(i,1);
+localStorage.setItem("usuarios",JSON.stringify(usuarios));
+listarUsuarios();
+}
+
+carregarUsuario();
+dashboard();
+</script>
+
+</body>
+</html>

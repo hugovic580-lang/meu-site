@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{height:100vh;display:flex;justify-content:center;align-items:center;
+background:linear-gradient(-45deg,#0a1a2f,#142f54,#1f3f75,#0a1a2f);
+background-size:400% 400%;animation:bg 10s ease infinite;}
+@keyframes bg{0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}}
+.box{background:rgba(255,255,255,.1);padding:40px;border-radius:12px;width:320px;color:white;}
+input{width:100%;padding:12px;margin:10px 0;border:none;border-radius:6px;}
+button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:6px;background:#0d6efd;color:white;cursor:pointer;}
+.sec{background:#475569;}
+</style>
+</head>
+
+<body>
+<div class="box">
+<h2>Login</h2>
+<input id="user" placeholder="Usuário">
+<input id="pass" type="password" placeholder="Senha">
+<button onclick="login()">Entrar</button>
+<button class="sec" onclick="location='cadastro.html'">Cadastrar</button>
+</div>
+
+<script>
+/* cria admin automático */
+let usuarios=JSON.parse(localStorage.getItem("usuarios"))||[];
+if(!usuarios.find(u=>u.usuario==="admin")){
+usuarios.push({
+usuario:"admin",
+senha:"admin123",
+foto:"",
+nivel:"admin"
+});
+localStorage.setItem("usuarios",JSON.stringify(usuarios));
+}
+
+function login(){
+let user=document.getElementById("user").value;
+let pass=document.getElementById("pass").value;
+
+let usuarios=JSON.parse(localStorage.getItem("usuarios"))||[];
+
+let encontrado=usuarios.find(u =>
+u.usuario===user && u.senha===pass
+);
+
+if(encontrado){
+localStorage.setItem("usuarioLogado",JSON.stringify(encontrado));
+window.location="painel.html";
+}else{
+alert("Usuário ou senha incorretos");
+}
+}
+</script>
+</body>
+</html>

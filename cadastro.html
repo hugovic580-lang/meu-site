@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Cadastro</title>
+<style>
+body{font-family:Arial;background:#0f172a;color:white;
+display:flex;justify-content:center;align-items:center;height:100vh;}
+.box{background:#1e293b;padding:30px;border-radius:10px;width:320px;}
+input,select{width:100%;padding:10px;margin:8px 0;border:none;border-radius:6px;}
+button{width:100%;padding:10px;border:none;border-radius:6px;margin-top:10px;background:#0d6efd;color:white;}
+.preview{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:10px auto;display:block;background:#333;}
+</style>
+</head>
+
+<body>
+<div class="box">
+<h2>Novo Usuário</h2>
+
+<input id="novoUser" placeholder="Usuário">
+<input id="novaSenha" type="password" placeholder="Senha">
+
+<select id="nivel">
+<option value="user">Usuário comum</option>
+<option value="admin">Administrador</option>
+</select>
+
+<input type="file" id="foto" accept="image/*" onchange="previewFoto()">
+<img id="preview" class="preview">
+
+<button onclick="cadastrar()">Cadastrar</button>
+</div>
+
+<script>
+function previewFoto(){
+let file=foto.files[0];
+if(!file)return;
+let reader=new FileReader();
+reader.onload=e=>preview.src=e.target.result;
+reader.readAsDataURL(file);
+}
+
+function cadastrar(){
+let user=novoUser.value;
+let pass=novaSenha.value;
+let nivelUser=nivel.value;
+let file=foto.files[0];
+
+if(user==""||pass==""){alert("Preencha tudo");return;}
+
+let reader=new FileReader();
+reader.onload=function(e){
+let usuarios=JSON.parse(localStorage.getItem("usuarios"))||[];
+
+usuarios.push({
+usuario:user,
+senha:pass,
+foto:e.target.result,
+nivel:nivelUser
+});
+
+localStorage.setItem("usuarios",JSON.stringify(usuarios));
+alert("Usuário criado!");
+window.location="login.html";
+};
+
+if(file) reader.readAsDataURL(file);
+else reader.onload({target:{result:""}});
+}
+</script>
+</body>
+</html>
